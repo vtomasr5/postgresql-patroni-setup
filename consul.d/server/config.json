@@ -4,7 +4,7 @@
   "bootstrap": false,
   "bootstrap_expect": 1,
   "server": true,
-  "client_addr": "172.28.33.11",
+  "client_addr": "0.0.0.0",
   "node_name": "pg01",
   "datacenter": "dc1",
   "data_dir": "/var/consul/server",

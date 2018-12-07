@@ -44,21 +44,19 @@ function setup_consul() {
     rm -f consul_${CONSUL_VERSION}_linux_amd64.zip
     cp -rp /vagrant/consul.d /etc/
     mkdir -p /var/consul/ui
+    useradd -M -d /var/consul -s /bin/bash consul
 
     # Configure consul
-    if [ "$(hostname)" == "pg01" ]; then # consul server
+    if [ "$(hostname)" == "pg01" ]; then # consul server and client
         mkdir -p /var/consul/server
         cp -p /vagrant/consul-server.service /etc/systemd/system/
-    elif [ "$(hostname)" == "pg02" ]; then # consul client (agent)
-        mkdir -p /var/consul/client
-        cp -p /vagrant/consul-client.service /etc/systemd/system/
     fi
     systemctl daemon-reload
+    
+    chown -R consul:consul /var/consul/
 
     if [ "$(hostname)" == "pg01" ]; then # consul server
         systemctl start consul-server
-    elif [ "$(hostname)" == "pg02" ]; then # consul client (agent)
-        systemctl start consul-client
     fi
 }
 
@@ -215,6 +213,9 @@ EOF
 #if [ ! -f /root/.ssh/id_rsa ]; then
 #    setup_ssh_keys
 #fi
+
+# Set the timezone (you might change it)
+timedatectl set-timezone Europe/Madrid
 
 # Refresh repository packages
 apt-get update
