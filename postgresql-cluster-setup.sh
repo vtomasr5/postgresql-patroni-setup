@@ -29,8 +29,6 @@ function setup_patroni() {
     pip install python-consul
     mkdir -p /etc/patroni
     mkdir -p /var/lib/postgresql/patroni
-    chown -R postgres:postgres /var/lib/postgresql/patroni
-    chown -R postgres:postgres /etc/patroni
 
     # Configure
     if [ "$(hostname)" == "pg01" ]; then
@@ -40,8 +38,6 @@ function setup_patroni() {
     fi
     cp -p /vagrant/patroni.service /etc/systemd/system/ 
     systemctl daemon-reload
-
-    systemctl start patroni
 }
 
 function setup_consul() {
@@ -141,6 +137,9 @@ function setup_postgresql() {
 
     systemctl stop postgresql
 
+    chown -R postgres:postgres /var/lib/postgresql/patroni
+    chown -R postgres:postgres /etc/patroni
+
     cat > /etc/postgresql/${POSTGRESQL_VERSION}/main/pg_hba.conf <<EOF
 local   all             postgres                                peer
 
@@ -219,6 +218,9 @@ EOF
 
     # Make sure patroni can find all the postgresql binaries
     ln -f -s /usr/lib/postgresql/${POSTGRESQL_VERSION}/bin/* /usr/bin/
+
+    # start patroni after all
+    systemctl start patroni
 }
 
 #if [ ! -f /root/.ssh/id_rsa ]; then
