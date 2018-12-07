@@ -1,13 +1,16 @@
-scope: postgres
-namespace: /db/
-name: postgresql0
+scope: clustertest
+#namespace: /db/
+name: pg01
 
 restapi:
     listen: 172.28.33.11:8008
     connect_address: 172.28.33.11:8008
 
-etcd:
+consul:
     host: 172.28.33.11:8500
+
+etcd:
+    host: 127.0.0.1:2379
 
 bootstrap:
     dcs:
@@ -38,7 +41,7 @@ bootstrap:
 postgresql:
     listen: 172.28.33.11:5432
     connect_address: 172.28.33.11:5432
-    data_dir: /data/patroni
+    data_dir: /var/lib/postgresql/patroni
     pgpass: /tmp/pgpass
     authentication:
         replication:

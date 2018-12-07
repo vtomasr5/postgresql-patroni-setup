@@ -19,14 +19,18 @@ function setup_ssh_keys() {
 }
 
 function setup_python() {
-    apt-get -y install python python-pip wget unzip
+    apt-get -y install python python-pip wget unzip curl
 }
 
 function setup_patroni() {
     # Install
     pip install patroni[consul]==${PATRONI_VERSION}
     pip install psycopg2-binary
+    pip install python-consul
     mkdir -p /etc/patroni
+    mkdir -p /var/lib/postgresql/patroni
+    chown -R postgres: /var/lib/postgresql/patroni
+    chown -R postgres: /etc/patroni
 
     # Configure
     cp -p /vagrant/patroni.yml /etc/patroni/patroni.yml
@@ -38,7 +42,7 @@ function setup_patroni() {
 
 function setup_consul() {
     # Install
-    wget -c https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
+    curl -s -O https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
     unzip consul_${CONSUL_VERSION}_linux_amd64.zip
     mv consul /usr/local/bin/
     rm -f consul_${CONSUL_VERSION}_linux_amd64.zip
@@ -208,6 +212,9 @@ wal_keep_segments = '200'
 wal_level = 'hot_standby'
 work_mem = '128MB'
 EOF
+
+    # Make sure patroni can find all the postgresql binaries
+    ln -s /usr/lib/postgresql/${POSTGRESQL_VERSION}/bin/* /usr/bin/
 }
 
 #if [ ! -f /root/.ssh/id_rsa ]; then
