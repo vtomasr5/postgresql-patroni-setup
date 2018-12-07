@@ -29,11 +29,15 @@ function setup_patroni() {
     pip install python-consul
     mkdir -p /etc/patroni
     mkdir -p /var/lib/postgresql/patroni
-    chown -R postgres: /var/lib/postgresql/patroni
-    chown -R postgres: /etc/patroni
+    chown -R postgres:postgres /var/lib/postgresql/patroni
+    chown -R postgres:postgres /etc/patroni
 
     # Configure
-    cp -p /vagrant/patroni.yml /etc/patroni/patroni.yml
+    if [ "$(hostname)" == "pg01" ]; then
+        cp -p /vagrant/patroni1.yml /etc/patroni/patroni.yml
+    elif [ "$(hostname)" == "pg02" ]; then # consul server and client
+        cp -p /vagrant/patroni2.yml /etc/patroni/patroni.yml
+    fi
     cp -p /vagrant/patroni.service /etc/systemd/system/ 
     systemctl daemon-reload
 
@@ -214,7 +218,7 @@ work_mem = '128MB'
 EOF
 
     # Make sure patroni can find all the postgresql binaries
-    ln -s /usr/lib/postgresql/${POSTGRESQL_VERSION}/bin/* /usr/bin/
+    ln -f -s /usr/lib/postgresql/${POSTGRESQL_VERSION}/bin/* /usr/bin/
 }
 
 #if [ ! -f /root/.ssh/id_rsa ]; then
