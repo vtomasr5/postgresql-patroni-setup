@@ -28,17 +28,18 @@ The cluster is configured with a single primary and one asynchronous replica.
 
 1.  On 2 separate windows:
 2.  `vagrant up pg01 && vagrant ssh pg01`
-3.  wait 20 seconds before starting pg02
 4.  `vagrant up pg02 && vagrant ssh pg02`
 
 # Viewing cluster status
 
 Get patroni information from his members
-  - patronictl list
+  - patronictl -c /etc/patroni/patroni.yml list
 
 # Connecting to PostgreSQL
 
-You can connect via HAproxy using the balancing IP: 172.28.33.11:5000
+You can connect via HAproxy using the balancing IP
+  - 172.28.33.11:5000 (postgresql)
+  - 172.28.33.11:7000 (HAproxy stats)
 
 # TODO
 
