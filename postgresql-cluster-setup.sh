@@ -7,16 +7,8 @@ POSTGRESQL_VERSION=9.6
 PGBOUNCER_VERSION=1.9.0-2.pgdg16.04+1
 CONSUL_VERSION=1.4.0
 PATRONI_VERSION=1.5.3
-
-function setup_ssh_keys() {
-    cp -rp /vagrant/.ssh/* /root/.ssh
-    cp -rp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys
-    chmod 700 /root/.ssh
-    chmod 600 /root/.ssh/id_rsa
-    chmod 644 /root/.ssh/id_rsa.pub
-    chown -R root /root/.ssh
-    chgrp -R root /root/.ssh
-}
+PSYCOPG2_VERSION=2.7.6.1
+PYCONSUL_VERSION=1.1.0
 
 function setup_python() {
     apt-get -y install python python-pip wget unzip curl
@@ -25,10 +17,11 @@ function setup_python() {
 function setup_patroni() {
     # Install
     pip install patroni[consul]==${PATRONI_VERSION}
-    pip install psycopg2-binary
-    pip install python-consul
+    pip install psycopg2-binary==${PSYCOPG2_VERSION}
+    pip install python-consul==${PYCONSUL_VERSION}
     mkdir -p /etc/patroni
     mkdir -p /var/lib/postgresql/patroni
+    chmod 700 /var/lib/postgresql/patroni
 
     # Configure
     if [ "$(hostname)" == "pg01" ]; then
@@ -223,10 +216,6 @@ EOF
     systemctl start patroni
 }
 
-#if [ ! -f /root/.ssh/id_rsa ]; then
-#    setup_ssh_keys
-#fi
-
 # Set the timezone (you might change it)
 timedatectl set-timezone Europe/Madrid
 
@@ -260,6 +249,7 @@ if [ ! -f /etc/postgresql/${POSTGRESQL_VERSION}/main/postgresql.conf ]; then
     setup_postgresql
 fi
 
+# TODO
 #if [ ! -f /etc/pgbouncer/pgbouncer.ini ]; then
 #    setup_pgbouncer
 #fi

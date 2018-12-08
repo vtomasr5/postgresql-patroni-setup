@@ -3,9 +3,7 @@ postgresql-patroni-setup
 
 # Overview
 
-This repo it helps you quickly spin up a 2-node cluster of PostgreSQL, managed by Patroni.
-
-It's intended as a playground for us, and a learning resource that we wanted to share with the community.
+This repo it helps you quickly spin up a 2-node cluster of PostgreSQL, managed by Patroni using Consul.
 
 # What's in the cluster?
 
@@ -13,6 +11,10 @@ When you start the cluster, you get 2 nodes, each running:
 
   - PostgreSQL
   - Patroni
+
+and the pg01 will run also:
+
+  - Consul (server)
   - HAProxy
 
 All packages are from Ubuntu 16.04, except for PostgreSQL itself, which is at version 9.6.
@@ -39,7 +41,7 @@ Get patroni information from his members
 
 You can connect via HAproxy using the balancing IP
   - 172.28.33.11:5000 (postgresql)
-  - 172.28.33.11:7000 (HAproxy stats)
+  - 172.28.33.11:7000 (HAProxy stats)
 
 # TODO
 
