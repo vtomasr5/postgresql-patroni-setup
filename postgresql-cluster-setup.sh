@@ -29,9 +29,9 @@ function setup_patroni() {
 
     # Configure
     if [ "$(hostname)" == "pg01" ]; then
-        cp -p /vagrant/patroni1.yml /etc/patroni/patroni.yml
+        cp -p /vagrant/patroni01.yml /etc/patroni/patroni.yml
     elif [ "$(hostname)" == "pg02" ]; then # consul server and client
-        cp -p /vagrant/patroni2.yml /etc/patroni/patroni.yml
+        cp -p /vagrant/patroni02.yml /etc/patroni/patroni.yml
     fi
     cp -p /vagrant/patroni.service /etc/systemd/system/ 
     systemctl daemon-reload
