@@ -35,7 +35,7 @@ The cluster is configured with a single primary and one asynchronous replica.
 # Viewing cluster status
 
 Get patroni information from his members
-  - patronictl -c /etc/patroni/patroni.yml list
+  - `patronictl -c /etc/patroni/patroni.yml list`
 
 # Connecting to PostgreSQL
 
