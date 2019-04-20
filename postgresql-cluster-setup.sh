@@ -10,8 +10,12 @@ PATRONI_VERSION=1.5.6
 PSYCOPG2_VERSION=2.7.6.1
 PYCONSUL_VERSION=1.1.0
 
+function setup_packages() {
+    apt-get -y install wget unzip curl libpq-dev
+}
+
 function setup_python() {
-    apt-get -y install python python-pip wget unzip curl
+    apt-get -y install python python-pip
 }
 
 function setup_patroni() {
@@ -126,7 +130,7 @@ function setup_postgresql_repo() {
 
 function setup_postgresql() {
     # Install postgresql
-    apt-get -y install postgresql-${POSTGRESQL_VERSION}
+    apt-get -y install postgresql-${POSTGRESQL_VERSION} 
 
     systemctl stop postgresql
 
@@ -221,6 +225,8 @@ timedatectl set-timezone Europe/Madrid
 
 # Refresh repository packages
 apt-get update
+
+setup_packages
 
 if [ ! -f /usr/bin/pip ]; then
     setup_python
