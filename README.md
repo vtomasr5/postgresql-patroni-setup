@@ -47,7 +47,6 @@ You can connect via HAproxy using the balancing IP
 
 - [ ] Add pgBouncer support
 - [ ] Test on a Windows host (tested on Linux and macOS hosts)
-- [ ] Add repmgr support
 - [ ] Improve documentation
 
 # I have a question!
