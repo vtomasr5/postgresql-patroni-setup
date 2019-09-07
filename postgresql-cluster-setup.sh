@@ -4,14 +4,14 @@ PG01="172.28.33.11"
 PG02="172.28.33.12"
 
 POSTGRESQL_VERSION=9.6
-PGBOUNCER_VERSION=1.9.0-2.pgdg16.04+1
-CONSUL_VERSION=1.4.4
-PATRONI_VERSION=1.5.6
+PGBOUNCER_VERSION=1.11.0-1.pgdg16.04+1
+CONSUL_VERSION=1.4.5
+PATRONI_VERSION=1.6.0
 PSYCOPG2_VERSION=2.7.6.1
 PYCONSUL_VERSION=1.1.0
 
 function setup_packages() {
-    apt-get -y install wget unzip curl libpq-dev
+    apt-get -y install wget unzip curl libpq-dev ca-certificates ntp tree
 }
 
 function setup_python() {
@@ -20,9 +20,9 @@ function setup_python() {
 
 function setup_patroni() {
     # Install
-    pip install patroni[consul]==${PATRONI_VERSION}
     pip install psycopg2-binary==${PSYCOPG2_VERSION}
     pip install python-consul==${PYCONSUL_VERSION}
+    pip install patroni[consul]==${PATRONI_VERSION}
     mkdir -p /etc/patroni
     mkdir -p /var/lib/postgresql/patroni
     chmod 700 /var/lib/postgresql/patroni
@@ -43,21 +43,34 @@ function setup_consul() {
     unzip consul_${CONSUL_VERSION}_linux_amd64.zip
     mv consul /usr/local/bin/
     rm -f consul_${CONSUL_VERSION}_linux_amd64.zip
-    cp -rp /vagrant/consul.d /etc/
+    mkdir -p /etc/consul.d/{server,client}
+    if [ "$(hostname)" == "pg01" ]; then 
+        cp -p /vagrant/consul.d/client/pg01.json /etc/consul.d/client/pg01.json
+        cp -rp /vagrant/consul.d/server/ /etc/consul.d
+    fi
+    if [ "$(hostname)" == "pg02" ]; then 
+        cp -p /vagrant/consul.d/client/pg02.json /etc/consul.d/client/pg02.json
+    fi
     mkdir -p /var/consul/ui
     useradd -M -d /var/consul -s /bin/bash consul
 
-    # Configure consul
+    # Configure consul service
+    mkdir -p /var/consul/{server,client}
     if [ "$(hostname)" == "pg01" ]; then # consul server and client
-        mkdir -p /var/consul/server
         cp -p /vagrant/consul-server.service /etc/systemd/system/
+        cp -p /vagrant/consul-client.service /etc/systemd/system/
+    else
+        cp -p /vagrant/consul-client.service /etc/systemd/system/
     fi
     systemctl daemon-reload
     
     chown -R consul:consul /var/consul/
 
-    if [ "$(hostname)" == "pg01" ]; then # consul server
+    if [ "$(hostname)" == "pg01" ]; then 
         systemctl start consul-server
+        systemctl start consul-client
+    else
+        systemctl start consul-client
     fi
 }
 
@@ -118,13 +131,10 @@ function setup_postgresql_repo() {
     echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 
     # Setup postgresql repo key
-    apt-get -y install wget ca-certificates ntp
     wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
 
-    # Update package info
     apt-get update
-    # Upgrade all the (safe) packages to start from a clean slate
-    apt-get -y upgrade
+    #apt-get -y upgrade
 }
 
 

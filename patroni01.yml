@@ -9,9 +9,6 @@ restapi:
 consul:
     host: 172.28.33.11:8500
 
-etcd:
-    host: 127.0.0.1:2379
-
 bootstrap:
     dcs:
         ttl: 30
