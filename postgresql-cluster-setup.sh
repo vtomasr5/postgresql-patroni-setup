@@ -59,7 +59,8 @@ function setup_consul() {
     if [ "$(hostname)" == "pg01" ]; then # consul server and client
         cp -p /vagrant/consul-server.service /etc/systemd/system/
         cp -p /vagrant/consul-client.service /etc/systemd/system/
-    else
+    fi
+    if [ "$(hostname)" == "pg02" ]; then 
         cp -p /vagrant/consul-client.service /etc/systemd/system/
     fi
     systemctl daemon-reload
@@ -69,7 +70,8 @@ function setup_consul() {
     if [ "$(hostname)" == "pg01" ]; then 
         systemctl start consul-server
         systemctl start consul-client
-    else
+    fi
+    if [ "$(hostname)" == "pg02" ]; then 
         systemctl start consul-client
     fi
 }
