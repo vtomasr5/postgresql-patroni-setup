@@ -33,7 +33,7 @@ function setup_patroni() {
     elif [ "$(hostname)" == "pg02" ]; then # consul server and client
         cp -p /vagrant/patroni02.yml /etc/patroni/patroni.yml
     fi
-    cp -p /vagrant/patroni.service /etc/systemd/system/ 
+    cp -p /vagrant/patroni.service /etc/systemd/system/
     systemctl daemon-reload
 }
 
@@ -44,11 +44,11 @@ function setup_consul() {
     mv consul /usr/local/bin/
     rm -f consul_${CONSUL_VERSION}_linux_amd64.zip
     mkdir -p /etc/consul.d/{server,client}
-    if [ "$(hostname)" == "pg01" ]; then 
+    if [ "$(hostname)" == "pg01" ]; then
         cp -p /vagrant/consul.d/client/pg01.json /etc/consul.d/client/pg01.json
         cp -rp /vagrant/consul.d/server/ /etc/consul.d
     fi
-    if [ "$(hostname)" == "pg02" ]; then 
+    if [ "$(hostname)" == "pg02" ]; then
         cp -p /vagrant/consul.d/client/pg02.json /etc/consul.d/client/pg02.json
     fi
     mkdir -p /var/consul/ui
@@ -60,19 +60,22 @@ function setup_consul() {
         cp -p /vagrant/consul-server.service /etc/systemd/system/
         cp -p /vagrant/consul-client.service /etc/systemd/system/
     fi
-    if [ "$(hostname)" == "pg02" ]; then 
+    if [ "$(hostname)" == "pg02" ]; then
         cp -p /vagrant/consul-client.service /etc/systemd/system/
     fi
     systemctl daemon-reload
-    
+
     chown -R consul:consul /var/consul/
 
-    if [ "$(hostname)" == "pg01" ]; then 
+    if [ "$(hostname)" == "pg01" ]; then
         systemctl start consul-server
+        systemctl enable consul-server
         systemctl start consul-client
+        systemctl enable consul-client
     fi
-    if [ "$(hostname)" == "pg02" ]; then 
+    if [ "$(hostname)" == "pg02" ]; then
         systemctl start consul-client
+        systemctl enable consul-client
     fi
 }
 
@@ -84,6 +87,7 @@ function setup_haproxy() {
     cp -p /vagrant/haproxy.cfg /etc/haproxy/haproxy.cfg
 
     systemctl restart haproxy
+    systemctl enable haproxy
     # Check syntax if fails: /usr/sbin/haproxy -c -V -f /etc/haproxy/haproxy.cfg
 }
 
@@ -126,6 +130,7 @@ EOF
 START=1
 EOF
     systemctl restart pgbouncer
+    systemctl enable pgbouncer
 }
 
 function setup_postgresql_repo() {
@@ -142,7 +147,7 @@ function setup_postgresql_repo() {
 
 function setup_postgresql() {
     # Install postgresql
-    apt-get -y install postgresql-${POSTGRESQL_VERSION} 
+    apt-get -y install postgresql-${POSTGRESQL_VERSION}
 
     systemctl stop postgresql
 
@@ -230,6 +235,7 @@ EOF
 
     # start patroni after all
     systemctl start patroni
+    systemctl enable patroni
 }
 
 # Set the timezone (you might change it)
