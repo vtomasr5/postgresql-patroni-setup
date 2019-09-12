@@ -26,6 +26,8 @@ function setup_patroni() {
     mkdir -p /etc/patroni
     mkdir -p /var/lib/postgresql/patroni
     chmod 700 /var/lib/postgresql/patroni
+    mkdir -p /var/log/patroni
+    chmod 777 /var/log/patroni
 
     # Configure
     if [ "$(hostname)" == "pg01" ]; then
@@ -226,7 +228,7 @@ ssl_key_file = '/etc/ssl/private/ssl-cert-snakeoil.key'
 unix_socket_directories = '/var/run/postgresql'
 wal_buffers = '8MB'
 wal_keep_segments = '200'
-wal_level = 'hot_standby'
+wal_level = 'replica'
 work_mem = '128MB'
 EOF
 

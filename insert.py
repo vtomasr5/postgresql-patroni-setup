@@ -99,5 +99,9 @@ class DB():
         self.cursor()
 
 db = DB(user=user, password=password, host=host, port=port, database=database, reconnect=True)
+i = 0
 while True:
+    db.execute("create table if not exists t1 (id integer); ")
     db.execute("insert into t1(id) values(%d)" % random.randint(1, 1000))
+    print(i)
+    i = i+1
