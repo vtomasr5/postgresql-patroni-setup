@@ -29,6 +29,7 @@ class DB():
         self._connection = None
         self._cursor = None
         self.reconnect = reconnect
+        self.retry_time = -1
         self.init()
 
     def connect(self,retry_counter=0):
@@ -42,10 +43,13 @@ class DB():
                 if not self.reconnect or retry_counter >= LIMIT_RETRIES:
                     raise error
                 else:
+                    start = time.time()
                     retry_counter += 1
                     print("got error {}. reconnecting {}".format(str(error).strip(), retry_counter))
                     time.sleep(5)
                     self.connect(retry_counter)
+                    end = time.time()
+                    self.retry_time += end - start
             except (Exception, psycopg2.Error) as error:
                 raise error
 
@@ -65,11 +69,16 @@ class DB():
             if retry_counter >= LIMIT_RETRIES:
                 raise error
             else:
+                start = time.time()
                 retry_counter += 1
                 print("got error {}. retrying {}".format(str(error).strip(), retry_counter))
                 time.sleep(1)
                 self.reset()
                 self.execute(query, retry_counter)
+                end = time.time()
+                self.retry_time += end - start
+                if self.retry_time != -1:
+                    print("time spent retrying: %0.3fms" % (self.retry_time*1000))
         except (Exception, psycopg2.Error) as error:
             raise error
 #        return self._cursor.fetchone()
@@ -103,5 +112,6 @@ i = 0
 while True:
     db.execute("create table if not exists t1 (id integer); ")
     db.execute("insert into t1(id) values(%d)" % random.randint(1, 1000))
-    print(i)
+    if i % 10000 == 0:
+        print(i)
     i = i+1
