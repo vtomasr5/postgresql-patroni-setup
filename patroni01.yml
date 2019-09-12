@@ -57,6 +57,7 @@ postgresql:
             password: secretpassword
     parameters:
         unix_socket_directories: '/var/run/postgresql'
+        wal_compression: on
 
 tags:
     nofailover: false

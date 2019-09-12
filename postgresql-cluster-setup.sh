@@ -152,6 +152,7 @@ function setup_postgresql() {
     apt-get -y install postgresql-${POSTGRESQL_VERSION}
 
     systemctl stop postgresql
+    systemctl disable postgresql
 
     chown -R postgres:postgres /var/lib/postgresql/patroni
     chown -R postgres:postgres /etc/patroni
