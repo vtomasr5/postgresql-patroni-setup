@@ -10,6 +10,8 @@ PATRONI_VERSION=1.6.0
 PSYCOPG2_VERSION=2.8.3
 PYCONSUL_VERSION=1.1.0
 
+PG_PATH="/etc/postgresql/${POSTGRESQL_VERSION}/main"
+
 function setup_packages() {
     apt-get -y install wget unzip curl libpq-dev ca-certificates ntp tree
 }
@@ -157,7 +159,7 @@ function setup_postgresql() {
     chown -R postgres:postgres /var/lib/postgresql/patroni
     chown -R postgres:postgres /etc/patroni
 
-    cat > /etc/postgresql/${POSTGRESQL_VERSION}/main/pg_hba.conf <<EOF
+    cat > ${PG_PATH}/pg_hba.conf <<EOF
 local   all             postgres                                peer
 
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
@@ -187,7 +189,7 @@ host       all     postgres 172.28.33.12/32                 trust
 hostssl    all     postgres 172.28.33.12/32                 trust
 EOF
 
-    cat > /etc/postgresql/${POSTGRESQL_VERSION}/main/postgresql.conf <<EOF
+    cat > ${PG_PATH}/postgresql.conf <<EOF
 archive_command = 'exit 0'
 archive_mode = 'on'
 autovacuum = 'on'
@@ -199,9 +201,9 @@ datestyle = 'iso, mdy'
 default_text_search_config = 'pg_catalog.english'
 effective_cache_size = '128MB'
 external_pid_file = '/var/run/postgresql/${POSTGRESQL_VERSION}-main.pid'
-hba_file = '/etc/postgresql/${POSTGRESQL_VERSION}/main/pg_hba.conf'
+hba_file = '${PG_PATH}/pg_hba.conf'
 hot_standby = 'on'
-ident_file = '/etc/postgresql/${POSTGRESQL_VERSION}/main/pg_ident.conf'
+ident_file = '${PG_PATH}/pg_ident.conf'
 include_if_exists = 'repmgr_lib.conf'
 lc_messages = 'C'
 listen_addresses = '*'
@@ -272,7 +274,7 @@ if [ ! -f /etc/apt/sources.list.d/pgdg.list ]; then
     setup_postgresql_repo
 fi
 
-if [ ! -f /etc/postgresql/${POSTGRESQL_VERSION}/main/postgresql.conf ]; then
+if [ ! -f ${PG_PATH}/postgresql.conf ]; then
     setup_postgresql
 fi
 
