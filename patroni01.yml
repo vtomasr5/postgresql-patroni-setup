@@ -12,7 +12,7 @@ restapi:
     connect_address: 172.28.33.11:8008
 
 consul:
-    host: 172.28.33.11:8500
+    host: 172.28.33.13:8500
 
 bootstrap:
     dcs:

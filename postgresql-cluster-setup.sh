@@ -48,38 +48,45 @@ function setup_consul() {
     mv consul /usr/local/bin/
     rm -f consul_${CONSUL_VERSION}_linux_amd64.zip
     mkdir -p /etc/consul.d/{server,client}
+
     if [ "$(hostname)" == "pg01" ]; then
         cp -p /vagrant/consul.d/client/pg01.json /etc/consul.d/client/pg01.json
-        cp -rp /vagrant/consul.d/server/ /etc/consul.d
     fi
     if [ "$(hostname)" == "pg02" ]; then
         cp -p /vagrant/consul.d/client/pg02.json /etc/consul.d/client/pg02.json
+    fi
+    if [ "$(hostname)" == "pg03" ]; then
+        cp -rp /vagrant/consul.d/server/ /etc/consul.d
     fi
     mkdir -p /var/consul/ui
     useradd -M -d /var/consul -s /bin/bash consul
 
     # Configure consul service
     mkdir -p /var/consul/{server,client}
-    if [ "$(hostname)" == "pg01" ]; then # consul server and client
-        cp -p /vagrant/consul-server.service /etc/systemd/system/
+    if [ "$(hostname)" == "pg01" ]; then # consul client
         cp -p /vagrant/consul-client.service /etc/systemd/system/
     fi
-    if [ "$(hostname)" == "pg02" ]; then
+    if [ "$(hostname)" == "pg02" ]; then # consul client
         cp -p /vagrant/consul-client.service /etc/systemd/system/
+    fi
+    if [ "$(hostname)" == "pg03" ]; then # consul server 
+        cp -p /vagrant/consul-server.service /etc/systemd/system/
     fi
     systemctl daemon-reload
 
     chown -R consul:consul /var/consul/
 
     if [ "$(hostname)" == "pg01" ]; then
-        systemctl start consul-server
-        systemctl enable consul-server
         systemctl start consul-client
         systemctl enable consul-client
     fi
     if [ "$(hostname)" == "pg02" ]; then
         systemctl start consul-client
         systemctl enable consul-client
+    fi
+    if [ "$(hostname)" == "pg03" ]; then
+        systemctl start consul-server
+        systemctl enable consul-server
     fi
 }
 
@@ -251,34 +258,44 @@ apt-get update
 
 setup_packages
 
-if [ ! -f /usr/bin/pip ]; then
-    setup_python
+if [ "$(hostname)" != "pg03" ]; then
+    if [ ! -f /usr/bin/pip ]; then
+        setup_python
+    fi
 fi
 
-if [ ! -f /usr/local/bin/patroni ]; then
-    setup_patroni
+if [ "$(hostname)" != "pg03" ]; then
+    if [ ! -f /usr/local/bin/patroni ]; then
+        setup_patroni
+    fi
 fi
 
 if [ ! -f /usr/local/bin/consul ]; then
     setup_consul
 fi
 
-# Install HAProxy only in the "master" when bootstrapping
-if [ "$(hostname)" == "pg01" ]; then
+# Install HAProxy only in the pg03 host when bootstrapping
+if [ "$(hostname)" == "pg03" ]; then
     if [ ! -f /etc/haproxy/haproxy.cfg ]; then
         setup_haproxy
     fi
 fi
 
-if [ ! -f /etc/apt/sources.list.d/pgdg.list ]; then
-    setup_postgresql_repo
+if [ "$(hostname)" != "pg03" ]; then
+    if [ ! -f /etc/apt/sources.list.d/pgdg.list ]; then
+        setup_postgresql_repo
+    fi
 fi
 
-if [ ! -f ${PG_PATH}/postgresql.conf ]; then
-    setup_postgresql
+if [ "$(hostname)" != "pg03" ]; then
+    if [ ! -f ${PG_PATH}/postgresql.conf ]; then
+        setup_postgresql
+    fi
 fi
 
 # TODO
-#if [ ! -f /etc/pgbouncer/pgbouncer.ini ]; then
-#    setup_pgbouncer
+#if [ "$(hostname)" == "pg03" ]; then
+#    if [ ! -f /etc/pgbouncer/pgbouncer.ini ]; then
+#        setup_pgbouncer
+#    fi
 #fi

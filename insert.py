@@ -14,7 +14,7 @@ import random
 user = 'postgres'
 password = 'secretpassword'
 
-host = '172.28.33.11'
+host = '172.28.33.13'
 port = '5000'
 database = 'test'
 LIMIT_RETRIES = 10

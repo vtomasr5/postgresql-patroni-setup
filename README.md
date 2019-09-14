@@ -3,7 +3,7 @@ postgresql-patroni-setup
 
 # Overview
 
-This repo it helps you quickly spin up a 2-node cluster of PostgreSQL, managed by Patroni using Consul.
+This repo it helps you quickly spin up a 3-node cluster of PostgreSQL, managed by Patroni using Consul.
 
 # What's in the cluster?
 
@@ -11,8 +11,9 @@ When you start the cluster, you get 2 nodes, each running:
 
   - PostgreSQL
   - Patroni
+  - Consul agent
 
-and the pg01 will run also:
+and the pg03 will run:
 
   - Consul (server)
   - HAProxy
@@ -28,8 +29,9 @@ The cluster is configured with a single primary and one asynchronous replica.
 
 # Getting started
 
-1.  On 2 separate windows:
-2.  `vagrant up pg01 && vagrant ssh pg01`
+1.  On 3 separate windows:
+2.  `vagrant up pg03 && vagrant ssh pg03 # pg03 contains the consul server and it must start first` 
+3.  `vagrant up pg01 && vagrant ssh pg01`
 4.  `vagrant up pg02 && vagrant ssh pg02`
 
 # Viewing cluster status
@@ -40,8 +42,8 @@ Get patroni information from his members
 # Connecting to PostgreSQL
 
 You can connect via HAproxy using the balancing IP
-  - 172.28.33.11:5000 (postgresql)
-  - 172.28.33.11:7000 (HAProxy stats)
+  - 172.28.33.13:5000 (postgresql)
+  - 172.28.33.13:7000 (HAProxy stats)
 
 # TODO
 

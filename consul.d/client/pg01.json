@@ -6,6 +6,6 @@
     "encrypt": "/q/vkVS+My2nl8Zk/8csuQ==", 
     "log_level": "INFO",
     "enable_syslog": true,
-    "start_join": ["172.28.33.11"],
+    "start_join": ["172.28.33.13"],
     "bind_addr": "172.28.33.11"
 }

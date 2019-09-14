@@ -9,10 +9,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.customize ["modifyvm", :id, "--memory", 1024]
   end
 
-  #
-  # 172.28.33.9 is the pgbouncer vip
-  # 172.28.33.10 is the postgresq vip
-  #
+  config.vm.define :pg03 do |pg03_config|
+    pg03_config.vm.hostname = 'pg03'
+    pg03_config.vm.network :private_network, ip: "172.28.33.13"
+    pg03_config.vm.provision :shell, :path => "postgresql-cluster-setup.sh"
+  end
   config.vm.define :pg01, primary: true do |pg01_config|
     pg01_config.vm.hostname = 'pg01'
     pg01_config.vm.network :private_network, ip: "172.28.33.11"
