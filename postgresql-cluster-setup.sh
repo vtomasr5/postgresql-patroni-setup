@@ -159,81 +159,81 @@ function setup_postgresql() {
     chown -R postgres:postgres /var/lib/postgresql/patroni
     chown -R postgres:postgres /etc/patroni
 
-    cat > ${PG_PATH}/pg_hba.conf <<EOF
-local   all             postgres                                peer
-
-# TYPE  DATABASE        USER            ADDRESS                 METHOD
-
-# "local" is for Unix domain socket connections only
-local   all             all                                     peer
-# IPv4 local connections:
-host    all             all             127.0.0.1/32            md5
-# IPv6 local connections:
-host    all             all             ::1/128                 md5
-# Allow replication connections from localhost, by a user with the
-# replication privilege.
-#local   replication     postgres                                peer
-#host    replication     postgres        127.0.0.1/32            md5
-host    replication     postgres        ::1/128                 md5
-hostssl    replication     postgres 172.28.33.11/32                 trust
-hostssl    replication     postgres 172.28.33.12/32                 trust
-# for user connections
-host       all     postgres 172.28.33.1/32                 trust
-hostssl    all     postgres 172.28.33.1/32                 trust
-# for pgbouncer
-host       all     postgres 172.28.33.10/32                 trust
-hostssl    all     postgres 172.28.33.10/32                 trust
-host       all     postgres 172.28.33.11/32                 trust
-hostssl    all     postgres 172.28.33.11/32                 trust
-host       all     postgres 172.28.33.12/32                 trust
-hostssl    all     postgres 172.28.33.12/32                 trust
-EOF
-
-    cat > ${PG_PATH}/postgresql.conf <<EOF
-archive_command = 'exit 0'
-archive_mode = 'on'
-autovacuum = 'on'
-checkpoint_completion_target = 0.6
-#checkpoint_segments = 10
-checkpoint_warning = 300
-data_directory = '/var/lib/postgresql/${POSTGRESQL_VERSION}/main'
-datestyle = 'iso, mdy'
-default_text_search_config = 'pg_catalog.english'
-effective_cache_size = '128MB'
-external_pid_file = '/var/run/postgresql/${POSTGRESQL_VERSION}-main.pid'
-hba_file = '${PG_PATH}/pg_hba.conf'
-hot_standby = 'on'
-ident_file = '${PG_PATH}/pg_ident.conf'
-include_if_exists = 'repmgr_lib.conf'
-lc_messages = 'C'
-listen_addresses = '*'
-log_autovacuum_min_duration = 0
-log_checkpoints = 'on'
-logging_collector = 'on'
-log_min_messages = DEBUG3
-log_filename = 'postgresql.log'
-log_connections = 'on'
-log_directory = '/var/log/postgresql'
-log_disconnections = 'on'
-log_line_prefix = '%t [%p]: [%l-1] user=%u,db=%d,app=%a '
-log_lock_waits = 'on'
-log_min_duration_statement = 0
-log_temp_files = 0
-maintenance_work_mem = '128MB'
-max_connections = 100
-max_wal_senders = 5
-port = 5432
-shared_buffers = '128MB'
-shared_preload_libraries = 'pg_stat_statements'
-ssl = on
-ssl_cert_file = '/etc/ssl/certs/ssl-cert-snakeoil.pem'
-ssl_key_file = '/etc/ssl/private/ssl-cert-snakeoil.key'
-unix_socket_directories = '/var/run/postgresql'
-wal_buffers = '8MB'
-wal_keep_segments = '200'
-wal_level = 'replica'
-work_mem = '128MB'
-EOF
+#    cat > ${PG_PATH}/pg_hba.conf <<EOF
+#local   all             postgres                                peer
+#
+## TYPE  DATABASE        USER            ADDRESS                 METHOD
+#
+## "local" is for Unix domain socket connections only
+#local   all             all                                     peer
+## IPv4 local connections:
+#host    all             all             127.0.0.1/32            md5
+## IPv6 local connections:
+#host    all             all             ::1/128                 md5
+## Allow replication connections from localhost, by a user with the
+## replication privilege.
+##local   replication     postgres                                peer
+##host    replication     postgres        127.0.0.1/32            md5
+#host    replication     postgres        ::1/128                 md5
+#hostssl    replication     postgres 172.28.33.11/32                 trust
+#hostssl    replication     postgres 172.28.33.12/32                 trust
+## for user connections
+#host       all     postgres 172.28.33.1/32                 trust
+#hostssl    all     postgres 172.28.33.1/32                 trust
+## for pgbouncer
+#host       all     postgres 172.28.33.10/32                 trust
+#hostssl    all     postgres 172.28.33.10/32                 trust
+#host       all     postgres 172.28.33.11/32                 trust
+#hostssl    all     postgres 172.28.33.11/32                 trust
+#host       all     postgres 172.28.33.12/32                 trust
+#hostssl    all     postgres 172.28.33.12/32                 trust
+#EOF
+#
+#    cat > ${PG_PATH}/postgresql.conf <<EOF
+#archive_command = 'exit 0'
+#archive_mode = 'on'
+#autovacuum = 'on'
+#checkpoint_completion_target = 0.6
+##checkpoint_segments = 10
+#checkpoint_warning = 300
+#data_directory = '/var/lib/postgresql/${POSTGRESQL_VERSION}/main'
+#datestyle = 'iso, mdy'
+#default_text_search_config = 'pg_catalog.english'
+#effective_cache_size = '128MB'
+#external_pid_file = '/var/run/postgresql/${POSTGRESQL_VERSION}-main.pid'
+#hba_file = '${PG_PATH}/pg_hba.conf'
+#hot_standby = 'on'
+#ident_file = '${PG_PATH}/pg_ident.conf'
+#include_if_exists = 'repmgr_lib.conf'
+#lc_messages = 'C'
+#listen_addresses = '*'
+#log_autovacuum_min_duration = 0
+#log_checkpoints = 'on'
+#logging_collector = 'on'
+#log_min_messages = DEBUG3
+#log_filename = 'postgresql.log'
+#log_connections = 'on'
+#log_directory = '/var/log/postgresql'
+#log_disconnections = 'on'
+#log_line_prefix = '%t [%p]: [%l-1] user=%u,db=%d,app=%a '
+#log_lock_waits = 'on'
+#log_min_duration_statement = 0
+#log_temp_files = 0
+#maintenance_work_mem = '128MB'
+#max_connections = 100
+#max_wal_senders = 5
+#port = 5432
+#shared_buffers = '128MB'
+#shared_preload_libraries = 'pg_stat_statements'
+#ssl = on
+#ssl_cert_file = '/etc/ssl/certs/ssl-cert-snakeoil.pem'
+#ssl_key_file = '/etc/ssl/private/ssl-cert-snakeoil.key'
+#unix_socket_directories = '/var/run/postgresql'
+#wal_buffers = '8MB'
+#wal_keep_segments = '200'
+#wal_level = 'replica'
+#work_mem = '128MB'
+#EOF
 
     # Make sure patroni can find all the postgresql binaries
     ln -f -s /usr/lib/postgresql/${POSTGRESQL_VERSION}/bin/* /usr/bin/
