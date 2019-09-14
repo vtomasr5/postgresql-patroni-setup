@@ -55,6 +55,7 @@ postgresql:
         superuser:
             username: postgres
             password: secretpassword
+#    custom_conf: '/etc/postgresql/9.6/main/postgresql.custom.conf'
     parameters:
         unix_socket_directories: '/var/run/postgresql'
         wal_compression: on
