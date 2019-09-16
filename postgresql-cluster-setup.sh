@@ -67,7 +67,7 @@ function setup_consul() {
     if [ "$(hostname)" == "pg02" ]; then # consul client
         cp -p /vagrant/consul-client.service /etc/systemd/system/
     fi
-    if [ "$(hostname)" == "pg03" ]; then # consul server 
+    if [ "$(hostname)" == "pg03" ]; then # consul server
         cp -p /vagrant/consul-server.service /etc/systemd/system/
     fi
     systemctl daemon-reload
@@ -101,6 +101,9 @@ function setup_haproxy() {
 }
 
 function setup_pgbouncer() {
+    # to be able to run python scripts
+    pip install psycopg2-binary==${PSYCOPG2_VERSION}
+
     # Install the version that comes with the official apt postgresql repository
     apt-get -y install pgbouncer=${PGBOUNCER_VERSION} postgresql-client-${POSTGRESQL_VERSION}
 
@@ -254,10 +257,8 @@ timedatectl set-timezone Europe/Madrid
 
 setup_packages
 
-if [ "$(hostname)" != "pg03" ]; then
-    if [ ! -f /usr/bin/pip ]; then
-        setup_python
-    fi
+if [ ! -f /usr/bin/pip ]; then
+    setup_python
 fi
 
 if [ "$(hostname)" != "pg03" ]; then
