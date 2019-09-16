@@ -136,7 +136,7 @@ log_pooler_errors = 1
 EOF
 
     cat > /etc/pgbouncer/userlist.txt <<EOF
-"postgres" "whatever_we_trust"
+"postgres" "secretpassword"
 EOF
 
     cat > /etc/default/pgbouncer <<EOF
