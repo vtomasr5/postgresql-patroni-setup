@@ -15,7 +15,7 @@ user = 'postgres'
 password = 'secretpassword'
 
 host = '172.28.33.13'
-port = '5000'
+port = '6432'
 database = 'test'
 LIMIT_RETRIES = 10
 

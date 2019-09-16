@@ -1,8 +1,5 @@
 #!/bin/bash
 
-PG01="172.28.33.11"
-PG02="172.28.33.12"
-
 POSTGRESQL_VERSION=9.6
 PGBOUNCER_VERSION=1.11.0-1.pgdg16.04+1
 CONSUL_VERSION=1.4.5
@@ -13,6 +10,7 @@ PYCONSUL_VERSION=1.1.0
 PG_PATH="/etc/postgresql/${POSTGRESQL_VERSION}/main"
 
 function setup_packages() {
+    apt-get update
     apt-get -y install wget unzip curl libpq-dev ca-certificates ntp tree
 }
 
@@ -69,7 +67,7 @@ function setup_consul() {
     if [ "$(hostname)" == "pg02" ]; then # consul client
         cp -p /vagrant/consul-client.service /etc/systemd/system/
     fi
-    if [ "$(hostname)" == "pg03" ]; then # consul server 
+    if [ "$(hostname)" == "pg03" ]; then # consul server
         cp -p /vagrant/consul-server.service /etc/systemd/system/
     fi
     systemctl daemon-reload
@@ -103,13 +101,17 @@ function setup_haproxy() {
 }
 
 function setup_pgbouncer() {
+    # to be able to run python scripts
+    pip install psycopg2-binary==${PSYCOPG2_VERSION}
+
     # Install the version that comes with the official apt postgresql repository
-    apt-get -y install pgbouncer=${PGBOUNCER_VERSION}
+    apt-get -y install pgbouncer=${PGBOUNCER_VERSION} postgresql-client-${POSTGRESQL_VERSION}
 
     cat > /etc/pgbouncer/pgbouncer.ini <<EOF
 [databases]
-postgres = host=172.28.33.10 pool_size=6
-template1 = host=172.28.33.10 pool_size=6
+postgres = host=172.28.33.13 port=5000 pool_size=6
+template1 = host=172.28.33.13 port=5000 pool_size=6
+test = host=172.28.33.13 port=5000 pool_size=6
 
 [pgbouncer]
 logfile = /var/log/postgresql/pgbouncer.log
@@ -134,7 +136,7 @@ log_pooler_errors = 1
 EOF
 
     cat > /etc/pgbouncer/userlist.txt <<EOF
-"postgres" "whatever_we_trust"
+"postgres" "secretpassword"
 EOF
 
     cat > /etc/default/pgbouncer <<EOF
@@ -253,15 +255,10 @@ function setup_postgresql() {
 # Set the timezone (you might change it)
 timedatectl set-timezone Europe/Madrid
 
-# Refresh repository packages
-apt-get update
-
 setup_packages
 
-if [ "$(hostname)" != "pg03" ]; then
-    if [ ! -f /usr/bin/pip ]; then
-        setup_python
-    fi
+if [ ! -f /usr/bin/pip ]; then
+    setup_python
 fi
 
 if [ "$(hostname)" != "pg03" ]; then
@@ -281,10 +278,8 @@ if [ "$(hostname)" == "pg03" ]; then
     fi
 fi
 
-if [ "$(hostname)" != "pg03" ]; then
-    if [ ! -f /etc/apt/sources.list.d/pgdg.list ]; then
-        setup_postgresql_repo
-    fi
+if [ ! -f /etc/apt/sources.list.d/pgdg.list ]; then
+    setup_postgresql_repo
 fi
 
 if [ "$(hostname)" != "pg03" ]; then
@@ -293,9 +288,8 @@ if [ "$(hostname)" != "pg03" ]; then
     fi
 fi
 
-# TODO
-#if [ "$(hostname)" == "pg03" ]; then
-#    if [ ! -f /etc/pgbouncer/pgbouncer.ini ]; then
-#        setup_pgbouncer
-#    fi
-#fi
+if [ "$(hostname)" == "pg03" ]; then
+    if [ ! -f /etc/pgbouncer/pgbouncer.ini ]; then
+        setup_pgbouncer
+    fi
+fi

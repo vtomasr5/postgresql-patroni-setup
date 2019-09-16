@@ -7,20 +7,27 @@ This repo it helps you quickly spin up a 3-node cluster of PostgreSQL, managed b
 
 # What's in the cluster?
 
-When you start the cluster, you get 2 nodes, each running:
+When you start the cluster, you get 2 nodes (pg01 and pg02), each running:
 
   - PostgreSQL
   - Patroni
   - Consul agent
 
-and the pg03 will run:
+and a third node (pg03) running:
 
   - Consul (server)
   - HAProxy
+  - pgBouncer
+
+The connection/data path is the following:
+
+1. pgBouncer (where the app will connect)
+2. HAProxy
+3. PostgreSQL
 
 All packages are from Ubuntu 16.04, except for PostgreSQL itself, which is at version 9.6.
 
-The cluster is configured with a single primary and one asynchronous replica.
+The cluster is configured with a single primary and one asynchronous streaming replica.
 
 # Dependencies
 1. [Virtualbox](https://www.virtualbox.org/wiki/Downloads)
@@ -41,13 +48,16 @@ Get patroni information from his members
 
 # Connecting to PostgreSQL
 
-You can connect via HAproxy using the balancing IP
+You should use the pgBouncer connection pool
+  - 172.28.33.13:6432
+
+But you can also connect via HAproxy using the balancing IP
   - 172.28.33.13:5000 (postgresql)
   - 172.28.33.13:7000 (HAProxy stats)
 
 # TODO
 
-- [ ] Add pgBouncer support
+- [X] Add pgBouncer support
 - [ ] Test on a Windows host (tested on Linux and macOS hosts)
 - [ ] Improve documentation
 
