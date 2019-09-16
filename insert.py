@@ -38,6 +38,7 @@ class DB():
                 self._connection = psycopg2.connect(user = self.user, password = self.password, host = self.host, port = self.port, database = self.database, connect_timeout=3, )
                 retry_counter = 0
                 self._connection.autocommit = True
+                self.retry_time = -1
                 return self._connection
             except psycopg2.OperationalError as error:
                 if not self.reconnect or retry_counter >= LIMIT_RETRIES:
