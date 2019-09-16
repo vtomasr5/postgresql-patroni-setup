@@ -113,5 +113,5 @@ tags:
     clonefrom: false
     nosync: false
 
-watchdot:
+watchdog:
     mode: off
