@@ -76,6 +76,9 @@ bootstrap:
     - host replication replicator 127.0.0.1/32 md5
     - host replication replicator 172.28.33.11/0 md5
     - host replication replicator 172.28.33.12/0 md5
+    - host all postgres 172.28.33.11/32 trust
+    - host all postgres 172.28.33.12/32 trust
+    - host all postgres 172.28.33.13/32 trust
     - host all all 0.0.0.0/0 md5
     - local all all peer
 
