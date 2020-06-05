@@ -39,6 +39,8 @@ function setup_patroni() {
         cp -p /vagrant/patroni02.yml /etc/patroni/patroni.yml
     fi
     cp -p /vagrant/patroni.service /etc/systemd/system/
+    echo "export PATRONICTL_CONFIG_FILE=/etc/patroni/patroni.yml" >> /etc/environment
+    source /etc/environment
     systemctl daemon-reload
 }
 
