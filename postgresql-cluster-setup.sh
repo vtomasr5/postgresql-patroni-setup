@@ -22,6 +22,7 @@ function setup_patroni() {
     # Install
     pip install psycopg2-binary==${PSYCOPG2_VERSION}
     pip install python-consul==${PYCONSUL_VERSION}
+    pip install flake8
     pip install patroni[consul]==${PATRONI_VERSION}
     mkdir -p /etc/patroni
     mkdir -p /var/lib/postgresql/patroni
