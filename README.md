@@ -25,7 +25,7 @@ The connection/data path is the following:
 2. HAProxy
 3. PostgreSQL
 
-All packages are from Ubuntu 16.04, except for PostgreSQL itself, which is at version 9.6.
+All packages are from Ubuntu 16.04, except for PostgreSQL itself, which is at version 12.x.
 
 The cluster is configured with a single primary and one asynchronous streaming replica.
 
@@ -58,7 +58,7 @@ But you can also connect via HAproxy using the balancing IP
 # TODO
 
 - [X] Add pgBouncer support
-- [ ] Test on a Windows host (tested on Linux and macOS hosts)
+- [X] Test on a Windows host (tested on Linux and macOS hosts)
 - [ ] Improve documentation
 
 # I have a question!
